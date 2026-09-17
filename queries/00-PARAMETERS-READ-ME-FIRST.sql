@@ -1,0 +1,119 @@
+-- ============================================================================
+-- Q00  PARAMETERS AND PLACEHOLDERS - READ THIS BEFORE RUNNING ANYTHING
+-- ============================================================================
+--
+-- Every query in this pack contains REPLACE_ME_* tokens. They are real SQL
+-- tokens so that the files parse cleanly - which means a query run WITHOUT
+-- replacing them will not error, it will just return zero rows or fail to
+-- resolve the table. Replace them before you run anything.
+--
+-- FIND AND REPLACE THESE SIX TOKENS (all are literal strings in the files):
+--
+--   REPLACE_ME_DATABASE.REPLACE_ME_TABLE
+--       your Athena database and CUR table, unquoted, e.g.
+--           cost_and_usage_data.athena_cur
+--       Find the table with:   SHOW TABLES IN REPLACE_ME_DATABASE;
+--       Confirm the columns:   DESCRIBE REPLACE_ME_DATABASE.REPLACE_ME_TABLE;
+--
+--   'REPLACE_ME_YYYY'
+--       a four-digit year as a QUOTED string, e.g.  '2024'
+--
+--   'REPLACE_ME_MONTH'
+--       a two-digit ZERO-PADDED month as a QUOTED string, e.g.  '03'
+--       NOT '3'. If your partition values are unpadded, an unpadded literal
+--       returns zero rows and reports no error at all. Confirm the format:
+--           SHOW PARTITIONS REPLACE_ME_DATABASE.REPLACE_ME_TABLE;
+--
+--   'REPLACE_ME_TIMESTAMP'
+--       a full UTC timestamp literal, e.g.  '2024-03-01T00:00:00Z'
+--       It is used as:  TIMESTAMP '2024-03-01T00:00:00Z'
+--       - the keyword, a space, then the quoted value. Keep that form.
+--
+--   'REPLACE_ME_PRODUCT_CODE'
+--       a billing product code, e.g.  'AmazonEC2'
+--
+--   'REPLACE_ME_YYYY-MM'
+--       a year-month string, e.g.  '2024-03'  (used only in Q04)
+--
+-- ----------------------------------------------------------------------------
+-- STEP 0 - PROVE THE TABLE BEFORE YOU SPEND MONEY ON IT
+-- ----------------------------------------------------------------------------
+-- The statements below cost effectively nothing. Run them first. Every
+-- failure mode in this pack shows up here rather than after you have paid for
+-- a full-table scan.
+--
+-- (1) Which columns does my table ACTUALLY have?
+--     Compare the output against docs/CUR-SCHEMA.md. If a column a query
+--     needs is missing, the query fails to run - which is the correct, loud
+--     failure. Never guess a column name.
+--
+--         DESCRIBE REPLACE_ME_DATABASE.REPLACE_ME_TABLE;
+--
+-- (2) Are the tag columns named what I think they are?
+--     Tag columns are resource_tags_user_<key>. Find the real names:
+--
+--         SHOW COLUMNS IN REPLACE_ME_DATABASE.REPLACE_ME_TABLE;
+--
+--     In the Athena console the table detail page shows the same list and is
+--     easier to read by eye.
+--
+-- (3) What do my partitions actually look like?
+--     The highest-value check in this file. It tells you the partition keys,
+--     the value format (padded or not) and how far the data goes.
+--
+--         SHOW PARTITIONS REPLACE_ME_DATABASE.REPLACE_ME_TABLE;
+--
+--     Then, for one month, how many rows are there and what do they add up
+--     to? This is the cheapest possible real query: one partition, four
+--     columns.
+--
+--         SELECT
+--             COUNT(*)                                 AS rows_in_month,
+--             MIN(line_item_usage_start_date)          AS first_usage,
+--             MAX(line_item_usage_start_date)          AS last_usage,
+--             COUNT(DISTINCT line_item_line_item_type) AS distinct_line_item_types,
+--             ROUND(SUM(line_item_unblended_cost), 2)  AS unblended_total
+--         FROM REPLACE_ME_DATABASE.REPLACE_ME_TABLE
+--         WHERE year  = 'REPLACE_ME_YYYY'
+--           AND month = 'REPLACE_ME_MONTH'
+--         ;
+--
+--     How to read the result:
+--       rows_in_month = 0
+--           wrong partition value format, the month is not loaded, or the
+--           table LOCATION points somewhere else.
+--       last_usage is well before today
+--           the report is still being delivered for that month. The current
+--           month is always incomplete. Never draw a conclusion from it.
+--       distinct_line_item_types = 1
+--           you are looking at a report containing a single charge type.
+--           Q02 explains why that changes every total you compute.
+--
+-- ----------------------------------------------------------------------------
+-- STEP 1 - THEN RECONCILE (Q15)
+-- ----------------------------------------------------------------------------
+-- Before trusting any analysis query, run
+--     15-RECONCILE-TO-COST-EXPLORER.sql
+-- and compare one month against a figure you can read in Cost Explorer.
+-- docs/VALIDATION.md explains what a mismatch means and how to narrow it.
+--
+-- ----------------------------------------------------------------------------
+-- STEP 2 - THEN RUN WHAT YOU CAME FOR
+-- ----------------------------------------------------------------------------
+-- Suggested order for "why did my bill go up?":
+--     Q03 (trend) -> Q04 (top drivers) -> Q08 (daily series for the service
+--     that moved) -> Q09 (anomalies, for what the month-grain view smoothed
+--     over) -> Q05 / Q06 / Q07 (who owns the cost).
+--
+-- Every query file carries its own BYTES SCANNED warning near the top. Read
+-- them. They are not boilerplate: they name the expensive queries and say
+-- why, and they tell you which predicates do and do not reduce bytes read.
+--
+-- This file runs one trivial statement and touches none of your data, so it
+-- is safe to open first and costs nothing.
+-- ============================================================================
+
+SELECT
+    'Placeholder file - see the comments above. Nothing here reads your CUR data.' AS note,
+    'Next: run 15-RECONCILE-TO-COST-EXPLORER.sql against one known month.'        AS next_step
+;
