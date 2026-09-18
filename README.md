@@ -83,4 +83,4 @@ The paid pack adds `COST-CONTROL-ATHENA.md`, `VALIDATION.md` (how to prove a que
 against Cost Explorer before trusting it), the reconciliation query, and the
 synthetic-CUR validation harness.
 
-→ **AWS CUR Athena FinOps Query Pack**: <!-- GUMROAD-LINK -->
+→ More developer tooling like this: **[duke5am.gumroad.com](https://duke5am.gumroad.com)** <!-- GUMROAD-LINK -->
