@@ -83,4 +83,19 @@ The paid pack adds `COST-CONTROL-ATHENA.md`, `VALIDATION.md` (how to prove a que
 against Cost Explorer before trusting it), the reconciliation query, and the
 synthetic-CUR validation harness.
 
+<!-- RELATED:START -->
+
+## Related tools
+
+- **[bank-csv-reconcile](https://github.com/duke5am/bank-csv-reconcile)** — Turn a bank CSV or Excel export into one clean table and reconcile the running balance, so a dropped row shows up instead of silently changing totals.
+  *(if you were searching for "bank statement csv to excel")*
+- **[ga4-bigquery-lint](https://github.com/duke5am/ga4-bigquery-lint)** — Lint GA4 BigQuery SQL for the session, event_params and cost mistakes that quietly give you wrong numbers, using sqlglot's real BigQuery grammar.
+  *(if you were searching for "ga4 bigquery queries")*
+
+All 28 tools in this set, grouped by what they check: **[dev-tools-index](https://duke5am.github.io/dev-tools-index/)**
+
+If you arrived here searching for one of these, this is the tool: **aws cur athena query** · **cost and usage report sql** · **athena partition pruning cost** · **aws cost anomaly query**
+
+<!-- RELATED:END -->
+
 → More developer tooling like this: **[duke5am.gumroad.com](https://duke5am.gumroad.com)** <!-- GUMROAD-LINK -->
