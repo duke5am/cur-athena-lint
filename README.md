@@ -1,10 +1,29 @@
 # cur-athena-lint
 
+[![PyPI](https://img.shields.io/pypi/v/cur-athena-lint)](https://pypi.org/project/cur-athena-lint/)
+
 Check AWS **Cost and Usage Report** Athena SQL for the mistakes that inflate your
 query bill and silently produce wrong numbers — without an AWS account.
 
+```bash
+pip install cur-athena-lint     # from PyPI, Python 3.9+
+cur-athena-lint                 # run the 16 checks over the SQL that ships with it
 ```
-$ python3 verify_pack.py
+
+Or from a clone — the same code either way:
+
+```bash
+git clone https://github.com/duke5am/cur-athena-lint
+cd cur-athena-lint
+python3 verify_pack.py          # the 16 structural checks
+python3 parse_all_sql.py        # the grammar sweep on its own
+```
+
+The seventeen SQL files ship **inside the package**, so the installed checker
+verifies them with no checkout and no extra download.
+
+```
+$ cur-athena-lint
 sqlglot      : 26.16.4   dialect: athena
 Verified cols: 80 names on the allow-list
 
@@ -16,6 +35,13 @@ Verified cols: 80 names on the allow-list
 [PASS] P07 every column the queries use is also declared in setup/create_table.sql
 RESULT: 15/15 structural checks passed, 0 failed
 ```
+
+Exit codes: `0` every check passed · `1` at least one check failed · `2` nothing
+was checked (`CUR_CONTENT` does not exist) · `3` internal failure.
+
+To point the checker at a different tree, set `CUR_CONTENT`. Note that the two
+pack-integrity checks (P12 manifest, P15 README counts) then fail unless that
+tree also ships a `REQUIRED_FILES.txt` and the pack README.
 
 ## Why CUR SQL goes wrong
 
@@ -71,11 +97,18 @@ pruning changes cost, not answers.
 ## Setup
 
 ```bash
+pip install cur-athena-lint        # pulls sqlglot, the only dependency
+cur-athena-lint
+```
+
+From a clone without installing anything:
+
+```bash
 apt install python3-sqlglot        # or: pip install sqlglot
 python3 verify_pack.py
 ```
 
-Requires `sqlglot` only. Refresh the DDL with `setup/create_table.sql`.
+Requires `sqlglot` only. Refresh the DDL with `cur_athena_lint/setup/create_table.sql`.
 
 ## The full pack
 

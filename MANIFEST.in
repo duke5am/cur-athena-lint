@@ -1,0 +1,10 @@
+# The seventeen bundled SQL files are runtime data: the checker's content root
+# is the package directory that holds queries/ and setup/, so they MUST ship in
+# the wheel. Without this file (and include-package-data = true in
+# pyproject.toml) setuptools silently drops them and the installed checker has
+# nothing to check.
+recursive-include cur_athena_lint/queries *.sql
+recursive-include cur_athena_lint/setup *.sql
+include README.md
+include CUR-SCHEMA.md
+include LICENSE

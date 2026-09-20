@@ -87,7 +87,7 @@ amortized_cost = line_item_unblended_cost
 documents what each component means and what amortization is; it does not
 publish `amortized cost = A + B + C`. Treat the expression as a starting
 point that you must validate against Cost Explorer for one month before you
-rely on it. `queries/15-RECONCILE-TO-COST-EXPLORER.sql` and
+rely on it. `cur_athena_lint/queries/15-RECONCILE-TO-COST-EXPLORER.sql` and
 `docs/VALIDATION.md` are exactly that procedure.
 
 ### Quick decision guide
@@ -175,7 +175,7 @@ appear in all Cost and Usage Reports**.
 | `line_item_product_code` | Billing product code, e.g. `AmazonEC2`. **Not a friendly name** | This is the column to use as "service" |
 | `line_item_usage_account_id` | Account ID that used the line item. For Organizations this can be the management account or a member account | Present in all reports |
 | `line_item_usage_account_name` | Account *name* that used the line item | A CUR **2.0** column. Not assumed by this pack's queries |
-| `line_item_resource_id` | **Optional.** Present only if you chose to include resource IDs. Amazon documents it as blank for usage types not associated with an instantiated host — data transfers, API requests — and for discounts, credits and taxes | The single biggest source of "my report doesn't add up". See §6 and `queries/05-COST-BY-RESOURCE.sql` |
+| `line_item_resource_id` | **Optional.** Present only if you chose to include resource IDs. Amazon documents it as blank for usage types not associated with an instantiated host — data transfers, API requests — and for discounts, credits and taxes | The single biggest source of "my report doesn't add up". See §6 and `cur_athena_lint/queries/05-COST-BY-RESOURCE.sql` |
 | `line_item_usage_amount` | Amount of usage in the period | Units differ per usage type (GB-Mo, Hrs, Requests). Never sum across usage types. For size-flexible RIs, Amazon says to use `reservation_total_reserved_units` instead. Certain subscription charges have a usage amount of 0 |
 | `line_item_unblended_cost` | See §1. **DOUBLE** | |
 | `line_item_unblended_rate` | Rate per unit for this account's usage. **STRING** | Documented as 0 for EC2/RDS line items with an RI discount |
@@ -353,7 +353,7 @@ populated based on the line item type."
 waste columns live on the **fee** line. A query that filters to only
 `DiscountedUsage` can never see unused commitment, and a query that filters to
 only `RIFee` can never see what the reservation actually delivered. You need
-both, which is why `queries/11-RI-SP-UTILISATION-AND-WASTE.sql` has separate
+both, which is why `cur_athena_lint/queries/11-RI-SP-UTILISATION-AND-WASTE.sql` has separate
 CTEs for the two.
 
 **Trap:** Amazon notes the `Unused*` columns are not provided for Dedicated
@@ -387,7 +387,7 @@ is the wrong one, because it accumulates. Divide used commitment by it and
 every month looks nearly fully utilised, which is worse than no number at all
 because it is reassuring. Use `amortized_upfront_commitment_for_billing_period
 + recurring_commitment_for_billing_period` as the period denominator — which
-is what `queries/11-RI-SP-UTILISATION-AND-WASTE.sql` does.
+is what `cur_athena_lint/queries/11-RI-SP-UTILISATION-AND-WASTE.sql` does.
 
 ### The Savings Plan asymmetry
 
@@ -419,7 +419,7 @@ on Lambda and Fargate lands under those product codes. Filtering to
 not what you would have paid. It prices usage at public rates regardless of
 the private pricing, EDP discounts, or commitments you hold. It is useful in
 exactly one role: as the numerator of a discount ratio, with the amortized
-cost as the denominator. That is what `queries/10-EC2-RI-SP-COVERAGE.sql`
+cost as the denominator. That is what `cur_athena_lint/queries/10-EC2-RI-SP-COVERAGE.sql`
 does with it.
 
 **Trap:** Amazon's published attribute list places `OfferingClass` and
